@@ -19,6 +19,8 @@ steps:
     git push origin v$(release_tag)
     echo befter
     find .
+    pwd
+    echo $(Build.ArtifactStagingDirectory)
   condition: eq(variables['has_released'], 'true')
 - task: GitHubRelease@0
   condition: eq(variables['has_released'], 'true')
