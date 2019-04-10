@@ -10,8 +10,9 @@ steps:
 - bash: ./release.sh
   displayName: 'maybe release'
 - bash: |
-    git -c http.extraheader="AUTHORIZATION: bearer $(system.accesstoken)" tag v$(release_tag)
-    git -c http.extraheader="AUTHORIZATION: bearer $(system.accesstoken)" push origin v$(release_tag)
+    set -euxo pipefail
+    git -c http.extraheader="AUTHORIZATION: basic $(system.accesstoken)" tag v$(release_tag)
+    git -c http.extraheader="AUTHORIZATION: basic $(system.accesstoken)" push origin v$(release_tag)
   condition: eq(variables['has_released'], 'true')
 - task: GitHubRelease@0
   condition: eq(variables['has_released'], 'true')
