@@ -11,8 +11,8 @@ steps:
   displayName: 'maybe release'
 - bash: |
     set -euxo pipefail
-    git -c http.extraheader="AUTHORIZATION: basic $(system.accesstoken)" tag v$(release_tag)
-    git -c http.extraheader="AUTHORIZATION: basic $(system.accesstoken)" push origin v$(release_tag)
+    git -c user.name=Azure -c user.email=info@digitalasset.com tag v$(release_tag)
+    git -c user.name=Azure -c user.email=info@digitalasset.com push origin v$(release_tag)
   condition: eq(variables['has_released'], 'true')
 - task: GitHubRelease@0
   condition: eq(variables['has_released'], 'true')
