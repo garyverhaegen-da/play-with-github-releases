@@ -5,6 +5,8 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 steps:
+- checkout: self
+  persistCredentials: true
 - bash: ./build.sh
   displayName: 'build'
 - bash: ./release.sh
@@ -12,9 +14,9 @@ steps:
 - bash: |
     set -euxo pipefail
     echo before
-    git -c user.name=Azure -c user.email=info@digitalasset.com tag v$(release_tag)
+    git tag v$(release_tag)
     echo between
-    git -c user.name=Azure -c user.email=info@digitalasset.com push origin v$(release_tag)
+    git push origin v$(release_tag)
     echo befter
   condition: eq(variables['has_released'], 'true')
 - task: GitHubRelease@0
