@@ -30,7 +30,6 @@ steps:
     action: 'create'
     target: '$(Build.SourceVersion)'
     tagSource: 'auto'
-    title: "Linux build"
     assets: './out/hello'
     assetUploadMode: 'replace'
     addChangeLog: false
