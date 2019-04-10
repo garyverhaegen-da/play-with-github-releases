@@ -9,7 +9,11 @@ steps:
   displayName: 'build'
 - bash: ./release.sh
   displayName: 'maybe release'
+- bash: |
+    git tag $(release_tag)
+  condition: eq(variables['has_released'], 'true')
 - task: GitHubRelease@0
+  condition: eq(variables['has_released'], 'true')
   inputs:
     gitHubConnection: 'garyverhaegen-da'
     repositoryName: '$(Build.Repository.Name)' 
