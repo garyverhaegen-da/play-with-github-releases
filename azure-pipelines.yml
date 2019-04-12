@@ -37,7 +37,7 @@ jobs:
         action: 'create'
         target: '$(Build.SourceVersion)'
         tagSource: 'auto'
-        assets: '$(Build.ArtifactStagingDirectory)'
+        assets: '$(Build.ArtifactStagingDirectory)/release/*'
         assetUploadMode: 'replace'
         addChangeLog: false
         isPrerelease: true
