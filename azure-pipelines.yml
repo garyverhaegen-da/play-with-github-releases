@@ -37,7 +37,7 @@ jobs:
       linuxReleased: $[ dependencies.linux.outputs['maybeRelease.has_released'] ]
       macOSReleased: $[ dependencies.macOS.outputs['maybeRelease.has_released'] ]
     condition: and(succeeded(),
-                   eq( variables['linuxReleased'], 'true'),
+                   eq( dependencies.linux.outputs['maybeRelease.has_released', 'true'),
                    eq( variables['macOSReleased'], 'true'))
     pool:
       vmImage: 'Ubuntu-16.04'
