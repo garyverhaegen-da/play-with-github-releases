@@ -19,8 +19,8 @@ jobs:
   - job: release
     dependsOn: [ "linux", "macOS" ]
     variables:
-      linuxReleased: $[ dependencies.linux.outputs['maybeRelease.has_released'] ]
-      macOSReleased: $[ dependencies.macOS.outputs['maybeRelease.has_released'] ]
+      linuxReleased: $[ dependencies.linux.outputs['has_released'] ]
+      macOSReleased: $[ dependencies.macOS.outputs['has_released'] ]
     condition: and(succeeded(),
                    eq( variables['linuxReleased'], 'true'),
                    eq( variables['macOSReleased'], 'true'))
@@ -43,4 +43,4 @@ jobs:
           assets: '$(Build.ArtifactStagingDirectory)'
           assetUploadMode: 'replace'
           addChangeLog: false
-          isDraft: true
+          isPrerelease: true
