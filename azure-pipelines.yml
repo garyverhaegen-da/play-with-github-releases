@@ -35,7 +35,7 @@ jobs:
     dependsOn: [ "linux", "macOS" ]
     variables:
       linuxReleased: $[ dependencies.linux.outputs['maybeRelease.has_released'] ]
-      macOSReleased: $[ dependencies.macOS.outputs['maybeRelease.has_released'] ]
+      macOSReleased: $[ dependencies.macOS.outputs.maybeRelease.has_released ]
     condition: and(succeeded(),
                    eq( dependencies.linux.outputs['maybeRelease.has_released'], 'true'),
                    eq( variables['macOSReleased'], 'true'))
@@ -46,8 +46,8 @@ jobs:
       persistCredentials: true
     - bash: |
         set -euxo pipefail
-        git tag v$(release_tag)
-        git push origin v$(release_tag)
+        git tag v$(cat $VERSION)
+        git push origin v$(cat VERSION)
     - task: GitHubRelease@0
       inputs:
         gitHubConnection: 'garyverhaegen-da'
