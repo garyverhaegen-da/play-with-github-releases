@@ -1,0 +1,21 @@
+parameters:
+  name: ''
+
+steps:
+- checkout: self
+  persistCredentials: true
+- bash: ./build.sh
+  displayName: 'build'
+- bash: ./release.sh
+  displayName: 'maybe release'
+  name: maybeRelease
+- bash: |
+    set -euxo pipefail
+    git tag v$(release_tag)
+    git push origin v$(release_tag)
+    cp out/hello $(Build.ArtifactStagingDirectory)/hello-${{ parameters.name }}
+  condition: eq(variables['has_released'], 'true')
+- task: PublishPipelineArtifact@0
+  inputs:
+    targetPath: "$(Build.ArtifactStagingDirectory)"
+    artifactName: "release/${{ parameters.name }}-artifact"

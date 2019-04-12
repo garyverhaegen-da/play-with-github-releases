@@ -1,36 +1,43 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'Ubuntu-16.04'
-
-steps:
-- checkout: self
-  persistCredentials: true
-- bash: ./build.sh
-  displayName: 'build'
-- bash: ./release.sh
-  displayName: 'maybe release'
-- bash: |
-    set -euxo pipefail
-    echo before
-    git tag v$(release_tag)
-    echo between
-    git push origin v$(release_tag)
-    echo befter
-    find .
-    pwd
-    echo $(Build.ArtifactStagingDirectory)
-  condition: eq(variables['has_released'], 'true')
-- task: GitHubRelease@0
-  condition: eq(variables['has_released'], 'true')
-  inputs:
-    gitHubConnection: 'garyverhaegen-da'
-    repositoryName: '$(Build.Repository.Name)'
-    action: 'create'
-    target: '$(Build.SourceVersion)'
-    tagSource: 'auto'
-    assets: './out/hello'
-    assetUploadMode: 'replace'
-    addChangeLog: false
-    isDraft: true
+jobs:
+  - job: linux
+    pool:
+      vmImage: 'Ubuntu-16.04'
+    steps:
+      - template: ./build-unix.yml
+        parameters:
+          name: linux
+  - job: macOS
+    pool:
+      vmImage: 'macOS-10.13'
+    steps:
+      - template: ./build-unix.yml
+        parameters:
+          name: macOS
+  - job: release
+    dependsOn: [ "linux", "macOS" ]
+    condition: and(succeeded(),
+                   eq( dependencies.linux.outputs['maybeRelease.isRelease'] , 'true'),
+                   eq( dependencies.macOS.outputs['maybeRelease.isRelease'] , 'true'))
+    pool:
+      vmImage: 'Ubuntu-16.04'
+    steps:
+      - checkout: self
+        persistCredentials: true
+      - bash: |
+          set -euxo pipefail
+          git tag v$(release_tag)
+          git push origin v$(release_tag)
+      - task: GitHubRelease@0
+        inputs:
+          gitHubConnection: 'garyverhaegen-da'
+          repositoryName: '$(Build.Repository.Name)'
+          action: 'create'
+          target: '$(Build.SourceVersion)'
+          tagSource: 'auto'
+          assets: '$(Build.ArtifactStagingDirectory)'
+          assetUploadMode: 'replace'
+          addChangeLog: false
+          isDraft: true
