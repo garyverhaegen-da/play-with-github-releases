@@ -9,6 +9,7 @@ jobs:
       - template: ./build-unix.yml
         parameters:
           name: linux
+        name: step
   - job: macOS
     pool:
       vmImage: 'macOS-10.13'
@@ -16,11 +17,13 @@ jobs:
       - template: ./build-unix.yml
         parameters:
           name: macOS
+        name: step
   - job: vars
     dependsOn: [ "linux", "macOS" ]
     variables:
-      linuxReleased: $[ dependencies.linux.outputs['has_released'] ]
-      macOSReleased: $[ dependencies.macOS.outputs['has_released'] ]
+      linuxReleased: $[ dependencies.linux.outputs['step.maybeRelease.has_released'] ]
+      macOSReleased: $[ dependencies.macOS.outputs['maybeRelease.has_released'] ]
+      other: $[ dependencies.macOS.outputs['step.has_released'] ]
     pool:
       vmImage: 'Ubuntu-16.04'
     steps:
@@ -28,6 +31,9 @@ jobs:
         persistCredentials: true
       - bash: |
           set -euxo pipefail
+          echo $(linuxReleased)
+          echo $(macOSReleased)
+          echo $(other)
           echo $(has_released)
           echo $(linux.has_released)
           echo $(dependencies.linux.has_released)
