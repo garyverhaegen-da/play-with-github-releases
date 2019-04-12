@@ -30,6 +30,7 @@ jobs:
         set -euxo pipefail
         git tag v$(cat VERSION)
         git push origin v$(cat VERSION)
+        find '$(Build.ArtifactStagingDirectory)/release/*'
     - task: GitHubRelease@0
       inputs:
         gitHubConnection: 'garyverhaegen-da'
