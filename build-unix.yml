@@ -12,7 +12,7 @@ steps:
 - bash: |
     set -euxo pipefail
     cp out/hello $(Build.ArtifactStagingDirectory)/hello-$(release_tag)-${{ parameters.name }}
-  condition: eq(variables['has_released'], 'true')
+  condition: eq(variables['maybeRelease.has_released'], 'true')
 - task: PublishPipelineArtifact@0
   inputs:
     targetPath: "$(Build.ArtifactStagingDirectory)"

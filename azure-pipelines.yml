@@ -6,18 +6,16 @@ jobs:
     pool:
       vmImage: 'Ubuntu-16.04'
     steps:
-      - template: ./build-unix.yml
-        parameters:
-          name: linux
-        name: step
+    - template: ./build-unix.yml
+      parameters:
+        name: linux
   - job: macOS
     pool:
       vmImage: 'macOS-10.13'
     steps:
-      - template: ./build-unix.yml
-        parameters:
-          name: macOS
-        name: step
+    - template: ./build-unix.yml
+      parameters:
+        name: macOS
   - job: vars
     dependsOn: [ "linux", "macOS" ]
     variables:
@@ -27,20 +25,20 @@ jobs:
     pool:
       vmImage: 'Ubuntu-16.04'
     steps:
-      - checkout: self
-        persistCredentials: true
-      - bash: |
-          set -euxo pipefail
-          echo $(linuxReleased)
-          echo $(macOSReleased)
-          echo $(other)
-          echo $(has_released)
-          echo $(linux.has_released)
-          echo $(dependencies.linux.has_released)
-          echo $( $[ dependencies.linux.outputs['has_released'] ] )
-          echo $( $[ dependencies.linux.outputs['maybeRelease.has_released'] ] )
-          echo $( $[ dependencies.linux.outputs.maybeRelease.has_released ] )
-          echo $( $[ dependencies.linux.maybeRelease.has_released ] )
+    - checkout: self
+      persistCredentials: true
+    - bash: |
+        set -euxo pipefail
+        echo $(linuxReleased)
+        echo $(macOSReleased)
+        echo $(other)
+        echo $(has_released)
+        echo $(linux.has_released)
+        echo $(dependencies.linux.has_released)
+        echo $( $[ dependencies.linux.outputs['has_released'] ] )
+        echo $( $[ dependencies.linux.outputs['maybeRelease.has_released'] ] )
+        echo $( $[ dependencies.linux.outputs.maybeRelease.has_released ] )
+        echo $( $[ dependencies.linux.maybeRelease.has_released ] )
   - job: release
     dependsOn: [ "linux", "macOS" ]
     variables:
@@ -52,20 +50,20 @@ jobs:
     pool:
       vmImage: 'Ubuntu-16.04'
     steps:
-      - checkout: self
-        persistCredentials: true
-      - bash: |
-          set -euxo pipefail
-          git tag v$(release_tag)
-          git push origin v$(release_tag)
-      - task: GitHubRelease@0
-        inputs:
-          gitHubConnection: 'garyverhaegen-da'
-          repositoryName: '$(Build.Repository.Name)'
-          action: 'create'
-          target: '$(Build.SourceVersion)'
-          tagSource: 'auto'
-          assets: '$(Build.ArtifactStagingDirectory)'
-          assetUploadMode: 'replace'
-          addChangeLog: false
-          isPrerelease: true
+    - checkout: self
+      persistCredentials: true
+    - bash: |
+        set -euxo pipefail
+        git tag v$(release_tag)
+        git push origin v$(release_tag)
+    - task: GitHubRelease@0
+      inputs:
+        gitHubConnection: 'garyverhaegen-da'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(Build.SourceVersion)'
+        tagSource: 'auto'
+        assets: '$(Build.ArtifactStagingDirectory)'
+        assetUploadMode: 'replace'
+        addChangeLog: false
+        isPrerelease: true
