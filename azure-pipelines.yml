@@ -16,11 +16,43 @@ jobs:
     - template: ./build-unix.yml
       parameters:
         name: macOS
+  - job: vars
+    dependsOn: [ "linux", "macOS" ]
+    variables:
+      linuxReleased: $[ dependencies.linux.outputs['step.maybeRelease.has_released'] ]
+      macOSReleased: $[ dependencies.macOS.outputs['maybeRelease.has_released'] ]
+      other: $[ dependencies.macOS.outputs['step.has_released'] ]
+    pool:
+      vmImage: 'Ubuntu-16.04'
+    steps:
+    - checkout: self
+      persistCredentials: true
+    - bash: |
+        echo ---1
+        echo $(linuxReleased)
+        echo ---2
+        echo $(macOSReleased)
+        echo ---3
+        echo $(other)
+        echo ---4
+        echo $(has_released)
+        echo ---5
+        echo $(linux.has_released)
+        echo ---6
+        echo $(dependencies.linux.has_released)
+        echo ---7
+        echo $( $[ dependencies.linux.outputs['has_released'] ] )
+        echo ---8
+        echo $( $[ dependencies.linux.outputs['maybeRelease.has_released'] ] )
+        echo ---9
+        echo $( $[ dependencies.linux.outputs.maybeRelease.has_released ] )
+        echo ---10
+        echo $( $[ dependencies.linux.maybeRelease.has_released ] )
   - job: release
     dependsOn: [ "linux", "macOS" ]
     variables:
-      linuxReleased: $[ dependencies.linux.outputs['maybeRelease.has_released'] ]
-      macOSReleased: $[ dependencies.macOS.outputs['maybeRelease.has_released'] ]
+      linuxReleased: $[ dependencies.linux.outputs['has_released'] ]
+      macOSReleased: $[ dependencies.macOS.outputs['has_released'] ]
     condition: and(succeeded(),
                    eq( variables['linuxReleased'], 'true'),
                    eq( variables['macOSReleased'], 'true'))
