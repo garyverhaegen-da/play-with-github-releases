@@ -11,9 +11,7 @@ steps:
   name: maybeRelease
 - bash: |
     set -euxo pipefail
-    git tag v$(release_tag)
-    git push origin v$(release_tag)
-    cp out/hello $(Build.ArtifactStagingDirectory)/hello-${{ parameters.name }}
+    cp out/hello $(Build.ArtifactStagingDirectory)/hello-$(release_tag)-${{ parameters.name }}
   condition: eq(variables['has_released'], 'true')
 - task: PublishPipelineArtifact@0
   inputs:
