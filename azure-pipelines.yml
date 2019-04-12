@@ -33,3 +33,4 @@ steps:
     assets: './out/hello'
     assetUploadMode: 'replace'
     addChangeLog: false
+    isDraft: true
