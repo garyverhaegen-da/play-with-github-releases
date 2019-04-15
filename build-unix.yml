@@ -16,12 +16,7 @@ steps:
     echo "##vso[task.setvariable variable=artifact;isOutput=true]$ARTIFACT"
   condition: eq(variables['maybeRelease.has_released'], 'true')
   name: hasReleased
-- bash: |
-    set -euxo pipefail
-    echo ${{ variables['hasReleased.artifact'] }}
-    echo --
-    echo $(hasReleased.artifact)
 - task: PublishPipelineArtifact@0
   inputs:
-    targetPath: $(Build.StagingDirectory)/${{ variables['hasReleased.artifact'] }}
-    artifactName: ${{ variables['hasReleased.artifact'] }}
+    targetPath: $(Build.StagingDirectory)/$(hasReleased.artifact)
+    artifactName: $(hasReleased.artifact)
