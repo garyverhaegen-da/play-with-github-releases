@@ -33,11 +33,11 @@ jobs:
         mkdir $(Build.StagingDirectory)/release
     - task: DownloadPipelineArtifact@0
       inputs:
-        artifactName: hello-$(cat VERSION)-linux
+        artifactName: $[ dependencies.linux.outputs['hasReleased.artifact'] ]
         targetPath: $(Build.StagingDirectory)/release
     - task: DownloadPipelineArtifact@0
       inputs:
-        artifactName: hello-$(cat VERSION)-macOS
+        artifactName: $[ dependencies.macos.outputs['hasReleased.artifact'] ]
         targetPath: $(Build.StagingDirectory)/release
     - task: GitHubRelease@0
       inputs:
