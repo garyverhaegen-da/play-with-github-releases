@@ -13,7 +13,7 @@ steps:
     set -euxo pipefail
     ARTIFACT=hello-$(release_tag)-${{ parameters.name }}
     cp out/hello $(Build.StagingDirectory)/$ARTIFACT
-    echo ##vso[task.setvariable variable=artifact;isOutput=true]$ARTIFACT
+    echo \#\#vso[task.setvariable variable=artifact;isOutput=true]$ARTIFACT
   condition: eq(variables['maybeRelease.has_released'], 'true')
   name: hasReleased
 - task: PublishPipelineArtifact@0
