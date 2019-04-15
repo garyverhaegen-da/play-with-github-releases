@@ -21,6 +21,9 @@ jobs:
     condition: and(succeeded(),
                    eq( dependencies.linux.outputs['maybeRelease.has_released'], 'true'),
                    eq( dependencies.macOS.outputs['maybeRelease.has_released'], 'true'))
+    variables:
+      artifact-linux: $[ dependencies.linux.outputs['hasReleased.artifact'] ]
+      artifact-macos: $[ dependencies.macos.outputs['hasReleased.artifact'] ]
     pool:
       vmImage: 'Ubuntu-16.04'
     steps:
@@ -33,11 +36,11 @@ jobs:
         mkdir $(Build.StagingDirectory)/release
     - task: DownloadPipelineArtifact@0
       inputs:
-        artifactName: ${{ dependencies.linux.outputs['hasReleased.artifact'] }}
+        artifactName: $(artifact-linux)
         targetPath: $(Build.StagingDirectory)/release
     - task: DownloadPipelineArtifact@0
       inputs:
-        artifactName: ${{ dependencies.macos.outputs['hasReleased.artifact'] }}
+        artifactName: $(artifact-macos)
         targetPath: $(Build.StagingDirectory)/release
     - task: GitHubRelease@0
       inputs:
