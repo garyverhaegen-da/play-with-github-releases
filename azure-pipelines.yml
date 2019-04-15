@@ -32,16 +32,12 @@ jobs:
         git push origin v$(cat VERSION)
         mkdir $(Build.StagingDirectory)/release
     - task: DownloadPipelineArtifact@0
-      variables:
-        artifact: $[ dependencies.linux.outputs['hasReleased.artifact'] ]
       inputs:
-        artifactName: $(artifact)
+        artifactName: ${{ dependencies.linux.outputs['hasReleased.artifact'] }}
         targetPath: $(Build.StagingDirectory)/release
     - task: DownloadPipelineArtifact@0
-      variables:
-        artifact: $[ dependencies.macos.outputs['hasReleased.artifact'] ]
       inputs:
-        artifactName: $(artifact)
+        artifactName: ${{ dependencies.macos.outputs['hasReleased.artifact'] }}
         targetPath: $(Build.StagingDirectory)/release
     - task: GitHubRelease@0
       inputs:
